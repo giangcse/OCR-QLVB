@@ -6,3 +6,5 @@ torch
 torchvision
 deepdoctection
 prettytable
+opencv-python==4.5.4.60
+jwt

@@ -1,0 +1,8 @@
+python-decouple
+fastapi
+python-multipart
+uvicorn
+torch
+torchvision
+deepdoctection
+prettytable

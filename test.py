@@ -1,8 +1,9 @@
 from prettytable import PrettyTable
 from pathlib import Path
+import cv2 
 
 import deepdoctection as dd
-analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='Vietnamese'"])
+analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='vie'"])
 path = Path.cwd() / "images"
 
 df = analyzer.analyze(path=path)
@@ -29,3 +30,4 @@ for i in table.csv:
 
 print(datatable)
 print(csv_table)
+cv2.imwrite('result.jpg', image)

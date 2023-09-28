@@ -127,8 +127,7 @@ async def ocr(file: UploadFile = File(...), token: str = Cookie(None)):
                 file_path = os.path.join(uploaded_folder, file.filename)
                 with open(file_path, "wb") as f:
                     shutil.copyfileobj(file.file, f)
-                
-                analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='Vietnamese'"])
+                analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='vie'"])
 
                 df = analyzer.analyze(path=uploaded_folder)
                 df.reset_state()  # This method must be called just before starting the iteration. It is part of the API.
@@ -144,7 +143,7 @@ async def ocr(file: UploadFile = File(...), token: str = Cookie(None)):
                 os.remove(file_path)
                 return JSONResponse(status_code=200, content=csv_table)
         except Exception as e:
-            return JSONResponse(status_code=400, content={'status': 'BADDDD REQUEST'})
+            return JSONResponse(status_code=400, content={'status': e})
     else:
         return JSONResponse(status_code=401, content={'status': 'Login first'})
 

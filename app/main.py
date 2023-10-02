@@ -33,8 +33,6 @@ conn = sqlite3.connect('sql.db')
 SECRET_KEY = 'BN3298'
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 720
-USERNAME = 'giangpt'
-PASSWORD = 'ThanhGiang2808@@'
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Model UserCredentials

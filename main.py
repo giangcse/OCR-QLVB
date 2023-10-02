@@ -11,6 +11,7 @@ import os
 import shutil
 import jwt
 import datetime
+import sqlite3
 
 # Create an API app
 app = FastAPI(
@@ -26,8 +27,8 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*']
 )
-# Mount to disk
-
+# Create connection
+conn = sqlite3.connect('sql.db')
 # Secret key for hash
 SECRET_KEY = 'BN3298'
 ALGORITHM = 'HS256'
@@ -47,10 +48,17 @@ class Token(BaseModel):
     token_type: str
 
 def verify_user_route(credentials: UserCredentials):
-    if credentials.username == USERNAME and credentials.password == PASSWORD:
-        return True
-    else:
+    if credentials.username == "" or credentials.password == "":
         return False
+    else:
+        results = conn.execute('''SELECT COUNT(USERNAME) FROM users WHERE USERNAME = ? AND PASSWORD = ?''', (credentials.username, sha3_256(bytes(credentials.password, 'utf-8')).hexdigest(),))
+        existed_username = 0
+        for i in results:
+            existed_username = int(i[0])
+        if existed_username != 0:
+            return True
+        else:
+            return False
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials")
@@ -101,18 +109,36 @@ async def home(request: Request, token: str = Cookie(None)):
             pass
     return RedirectResponse('/login')
 
-@app.get('/login')
-async def login(request: Request, token: str = Cookie(None)):
-    if token:
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            if username:
-                return RedirectResponse(url='/')
-        except jwt.PyJWTError:
-            pass
+@app.post('/register')
+async def register(credentials: UserCredentials):
+    if credentials.username == "" or credentials.password == "":
+        return JSONResponse(status_code=401, content="username/password/is_admin is empty")
     else:
-        return JSONResponse(status_code=401, content={'status': 'Must login'})
+        results = conn.execute('''SELECT COUNT(USERNAME) FROM users WHERE USERNAME = ?''', (credentials.username, ))
+        existed_username = 0
+        for i in results:
+            existed_username = int(i[0])
+        if existed_username == 0:
+            create_account = conn.execute('''INSERT INTO users VALUES (?, ?)''', (credentials.username, sha3_256(bytes(credentials.password, 'utf-8')).hexdigest(),))
+            conn.commit()
+            return JSONResponse(status_code=201, content="Created!")
+        else:
+            return JSONResponse(status_code=409, content="Username is existed!")
+
+@app.post('/change_password')
+async def change_password(request: Request):
+    if request.username == "" or request.password == "":
+        return JSONResponse(status_code=401, content="username/password is empty")
+    else:
+        results = conn.execute('''SELECT COUNT(USERNAME) FROM users WHERE USERNAME = ?''', (request.username, ))
+        existed_username = 0
+        for i in results:
+            existed_username = int(i[0])
+        if existed_username == 0:
+            create_account = conn.execute('''UPDATE users SET PASSWORD = ? WHERE USERNAME = ?''', (sha3_256(bytes(request.password, 'utf-8')).hexdigest(), request.username,))
+            return JSONResponse(status_code=201, content="Updated!")
+        else:
+            return JSONResponse(status_code=409, content="Username is existed!")
 
 @app.post('/ocr')
 async def ocr(file: UploadFile = File(...), token: str = Cookie(None)):

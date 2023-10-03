@@ -8,3 +8,4 @@ deepdoctection
 prettytable
 opencv-python==4.5.4.60
 pyjwt
+pillow==9.5.0

@@ -2,6 +2,7 @@ import cv2
 import os
 import numpy as np
 import easyocr
+import pytesseract
 from PIL import Image
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
@@ -10,7 +11,7 @@ from vietocr.tool.config import Cfg
 reader = easyocr.Reader(lang_list=['vi'], gpu=False)
 # VietOCR config
 config = Cfg.load_config_from_name('vgg_seq2seq')
-config['weights'] = 'models/vgg_seq2seq.pth'
+config['weights'] = os.path.join(os.getcwd(), 'models/vgg_seq2seq.pth')
 config['cnn']['pretrained']=False
 config['device'] = 'cpu'
 detector = Predictor(config)
@@ -38,17 +39,28 @@ for contour in contours:
 result_image = cv2.bitwise_and(thresholded_image, thresholded_image, mask=mask)
 
 # Read from Certificate
-text = reader.readtext(result_image)
-for (bbox, text, prob) in text:
+text = reader.readtext(result_image, paragraph=False, y_ths=0.1, x_ths=0.1,text_threshold=0.6)
+
+# print(text)
+
+for (bbox, text, _) in text:
     (top_left, top_right, bottom_right, bottom_left) = bbox
-    top_left = tuple(map(int, top_left))
-    bottom_right = tuple(map(int, bottom_right))
     
+    # Trước khi trích xuất ảnh cắt, đảm bảo rằng top_left và bottom_right là số nguyên
+    top_left = (int(top_left[0]), int(top_left[1]))
+    bottom_right = (int(bottom_right[0]), int(bottom_right[1]))
     # Vẽ bounding box
     cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
 
-    # Crop image by bounding box
-    
+    # Trích xuất ảnh cắt
+    cropped_image = image[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+
+    predict_image = Image.fromarray(cropped_image)
+    ocr_result = detector.predict(predict_image)
+
+    print(ocr_result)
+
+
 # Hiển thị ảnh kết quả
 cv2.imshow('Foreground (Text)', image)
 

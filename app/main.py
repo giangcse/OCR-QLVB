@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from hashlib import sha3_256
 from pydantic import BaseModel
-from decouple import config
 from .ocr_bangtn import extract_text
 
 import deepdoctection as dd
@@ -195,3 +194,6 @@ async def ocr_vanban(file: UploadFile = File(...), token: str = Cookie(None)):
     else:
         return JSONResponse(status_code=401, content={'status': 'Login first'})
 
+# if __name__=='__main__':
+#     import uvicorn
+#     uvicorn.run('main:app', host='0.0.0.0', port=8888, reload=True)

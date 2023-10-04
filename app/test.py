@@ -7,6 +7,7 @@ import warnings
 from PIL import Image
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
+from prettytable import PrettyTable
 
 warnings.filterwarnings("ignore")
 # Create a reader of EasyOCR
@@ -61,7 +62,8 @@ def extract_text(image_path: str):
     #     cv2.destroyAllWindows() 
 
 
+
 # Image path
 path = os.path.join(os.getcwd(), 'images', 'thanhgiang.jpg')
-print(extract_text(path))
+extract_text(path)
 

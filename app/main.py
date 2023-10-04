@@ -135,6 +135,7 @@ async def change_password(request: Request):
             existed_username = int(i[0])
         if existed_username == 0:
             create_account = conn.execute('''UPDATE users SET PASSWORD = ? WHERE USERNAME = ?''', (sha3_256(bytes(request.password, 'utf-8')).hexdigest(), request.username,))
+            conn.commit()
             return JSONResponse(status_code=201, content="Updated!")
         else:
             return JSONResponse(status_code=409, content="Username is existed!")
@@ -185,10 +186,10 @@ async def ocr_vanban(file: UploadFile = File(...), token: str = Cookie(None)):
                 file_path = os.path.join(uploaded_folder, file.filename)
                 with open(file_path, "wb") as f:
                     shutil.copyfileobj(file.file, f)
-                analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='vie'"])
-
                 result = extract_text(file_path)
                 os.remove(file_path)
+                create_log = conn.execute('''INSERT INTO logs VALUES (?, ?, ?, ?)''', ('OCR Bằng tốt nghiệp', str(result), username, round(datetime.datetime.now().timestamp()),))
+                conn.commit()
                 return JSONResponse(status_code=200, content=result)
         except Exception as e:
             return JSONResponse(status_code=400, content={'status': e})

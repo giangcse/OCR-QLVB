@@ -72,7 +72,7 @@ def extract_text(image_path: str):
             and (coords[3][0] <= bbox[3][0] and coords[3][1] >= bbox[3][1]):
                 result[configs[i]['keyword']] = ocr_result
 
-    return json.dumps(result, ensure_ascii=False)
+    return result
 
 
 # Hiển thị ảnh kết quả

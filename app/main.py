@@ -6,7 +6,7 @@ from hashlib import sha3_256
 from pydantic import BaseModel
 from .ocr_bangtn import extract_text
 
-# import deepdoctection as dd
+import deepdoctection as dd
 import os
 import shutil
 import jwt

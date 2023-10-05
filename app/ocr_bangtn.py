@@ -57,7 +57,19 @@ def extract_text(image_path: str):
     # Hiển thị ảnh kết quả
     # cv2.imshow('Foreground (Text)', result_image)
 
+<<<<<<< HEAD
     # if cv2.waitKey(0) & 0xff == 27:
     #     cv2.destroyAllWindows() 
+=======
+        for i in configs:
+            coords = configs[i]['coordinates']
+            if  (coords[0][0] <= bbox[0][0] and coords[0][1] <= bbox[0][1]) \
+            and (coords[1][0] >= bbox[1][0] and coords[1][1] <= bbox[1][1]) \
+            and (coords[2][0] >= bbox[2][0] and coords[2][1] >= bbox[2][1]) \
+            and (coords[3][0] <= bbox[3][0] and coords[3][1] >= bbox[3][1]):
+                result[configs[i]['keyword']] = ocr_result
+
+    return result
+>>>>>>> b97e484d95633423be5b1698b36d0a65fc055789
 
 

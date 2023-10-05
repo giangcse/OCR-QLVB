@@ -1,5 +1,9 @@
 .venv/
 .env
+<<<<<<< HEAD
 *.pth
 images/
 img_test/
+=======
+*.pth
+>>>>>>> b97e484d95633423be5b1698b36d0a65fc055789

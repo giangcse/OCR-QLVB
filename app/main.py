@@ -6,7 +6,7 @@ from hashlib import sha3_256
 from pydantic import BaseModel
 from .ocr_bangtn import extract_text
 
-import deepdoctection as dd
+# import deepdoctection as dd
 import os
 import shutil
 import jwt
@@ -138,38 +138,38 @@ async def change_password(request: Request):
         else:
             return JSONResponse(status_code=409, content="Username is existed!")
 
-@app.post('/ocr_bangdiem')
-async def ocr_bangdiem(file: UploadFile = File(...), token: str = Cookie(None)):
-    if token:
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            if username:
-                uploaded_folder = os.path.join(os.getcwd(), 'uploaded', username)
-                os.makedirs(uploaded_folder, exist_ok=True)
+# @app.post('/ocr_bangdiem')
+# async def ocr_bangdiem(file: UploadFile = File(...), token: str = Cookie(None)):
+#     if token:
+#         try:
+#             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#             username = payload.get("sub")
+#             if username:
+#                 uploaded_folder = os.path.join(os.getcwd(), 'uploaded', username)
+#                 os.makedirs(uploaded_folder, exist_ok=True)
                 
-                file_path = os.path.join(uploaded_folder, file.filename)
-                with open(file_path, "wb") as f:
-                    shutil.copyfileobj(file.file, f)
-                analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='vie'"])
+#                 file_path = os.path.join(uploaded_folder, file.filename)
+#                 with open(file_path, "wb") as f:
+#                     shutil.copyfileobj(file.file, f)
+#                 analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='vie'"])
 
-                df = analyzer.analyze(path=uploaded_folder)
-                df.reset_state()  # This method must be called just before starting the iteration. It is part of the API.
+#                 df = analyzer.analyze(path=uploaded_folder)
+#                 df.reset_state()  # This method must be called just before starting the iteration. It is part of the API.
 
-                doc=iter(df)
-                page = next(doc)
-                table = page.tables[0]
-                table.get_attribute_names()
-                csv_table = []
-                for i in table.csv:
-                    i = [item.replace('|', ' ').strip() for item in i]
-                    csv_table.append(i)
-                os.remove(file_path)
-                return JSONResponse(status_code=200, content=csv_table)
-        except Exception as e:
-            return JSONResponse(status_code=400, content={'status': e})
-    else:
-        return JSONResponse(status_code=401, content={'status': 'Login first'})
+#                 doc=iter(df)
+#                 page = next(doc)
+#                 table = page.tables[0]
+#                 table.get_attribute_names()
+#                 csv_table = []
+#                 for i in table.csv:
+#                     i = [item.replace('|', ' ').strip() for item in i]
+#                     csv_table.append(i)
+#                 os.remove(file_path)
+#                 return JSONResponse(status_code=200, content=csv_table)
+#         except Exception as e:
+#             return JSONResponse(status_code=400, content={'status': e})
+#     else:
+#         return JSONResponse(status_code=401, content={'status': 'Login first'})
     
 @app.post('/ocr_bangtn')
 async def ocr_vanban(file: UploadFile = File(...), token: str = Cookie(None)):
@@ -184,7 +184,6 @@ async def ocr_vanban(file: UploadFile = File(...), token: str = Cookie(None)):
                 file_path = os.path.join(uploaded_folder, file.filename)
                 with open(file_path, "wb") as f:
                     shutil.copyfileobj(file.file, f)
-                analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='vie'"])
 
                 result = extract_text(file_path)
                 os.remove(file_path)
@@ -194,6 +193,3 @@ async def ocr_vanban(file: UploadFile = File(...), token: str = Cookie(None)):
     else:
         return JSONResponse(status_code=401, content={'status': 'Login first'})
 
-# if __name__=='__main__':
-#     import uvicorn
-#     uvicorn.run('main:app', host='0.0.0.0', port=8888, reload=True)

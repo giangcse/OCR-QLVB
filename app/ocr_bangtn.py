@@ -18,7 +18,7 @@ config['cnn']['pretrained']=False
 config['device'] = 'cpu'
 detector = Predictor(config)
 # Keywords config
-with open(os.path.join(os.getcwd(), 'config.json'), 'r') as f:
+with open(os.path.join(os.getcwd(), 'config.json'), 'r', encoding='utf8') as f:
     configs = json.loads(f.read())
 
 def extract_text(image_path: str):
@@ -53,15 +53,11 @@ def extract_text(image_path: str):
         result[configs[i]['keyword']] = ocr_easy
         # Vẽ bounding box
         # cv2.rectangle(result_image, (int(coords[0][0]), int(coords[0][1])), (int(coords[2][0]), int(coords[2][1])), (255, 255, 255), 2)
-    return (json.dumps(result, ensure_ascii=False))
+    return result
     # Hiển thị ảnh kết quả
     # cv2.imshow('Foreground (Text)', result_image)
 
     # if cv2.waitKey(0) & 0xff == 27:
     #     cv2.destroyAllWindows() 
 
-
-# Image path
-path = os.path.join(os.getcwd(), 'images', 'thanhgiang.jpg')
-print(extract_text(path))
 

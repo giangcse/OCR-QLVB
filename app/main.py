@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from hashlib import sha3_256
 from pydantic import BaseModel
+from pdf2image import convert_from_path
 from .ocr_bangtn import extract_text
 
 import deepdoctection as dd
@@ -152,15 +153,21 @@ async def ocr_bangdiem(file: UploadFile = File(...), token: str = Cookie(None)):
                 file_path = os.path.join(uploaded_folder, file.filename)
                 with open(file_path, "wb") as f:
                     shutil.copyfileobj(file.file, f)
+                
                 analyzer = dd.get_dd_analyzer(config_overwrite=["LANGUAGE='vie'"])
-
+                # Kiểm tra nếu file là pdf thì convert sang jpg
+                # if file.filename.endswith('.pdf'):
+                    # pages = convert_pdf_to_image(file_path)
+                    # df = analyzer.analyze(path=file.filename)
+                # else:
                 df = analyzer.analyze(path=uploaded_folder)
+
                 df.reset_state()  # This method must be called just before starting the iteration. It is part of the API.
 
                 doc=iter(df)
                 page = next(doc)
+                page.
                 table = page.tables[0]
-                table.get_attribute_names()
                 csv_table = []
                 for i in table.csv:
                     i = [item.replace('|', ' ').strip() for item in i]
@@ -198,3 +205,18 @@ async def ocr_vanban(file: UploadFile = File(...), token: str = Cookie(None)):
     else:
         return JSONResponse(status_code=401, content={'status': 'Login first'})
 
+'''
+Utils functions
+'''
+# Convert pdf to image if file is PDF
+def convert_pdf_to_image(file_path):
+    if(file_path.endswith(".pdf")):
+        folder_path = file_path.replace('.pdf', '_pdf')
+        os.makedirs(f"{folder_path}", exist_ok=True)
+        
+        pages_path: list = []
+        pages = convert_from_path(file_path)
+        for idx, page in enumerate(pages):
+            page.save(os.path.join(folder_path, f'page_{idx}.jpg'), 'JPEG')
+            pages_path.append(os.path.join(folder_path, f'page_{idx}.jpg'))
+        return pages_path

@@ -11,3 +11,4 @@ pyjwt
 pillow==9.5.0
 easyocr
 vietocr
+pdf2image

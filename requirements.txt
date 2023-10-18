@@ -4,9 +4,8 @@ python-multipart
 uvicorn
 torch
 torchvision
-deepdoctection
 prettytable
-opencv-python==4.5.4.60
+opencv-python==4.8.0.74
 pyjwt
 pillow==9.5.0
 easyocr

@@ -29,4 +29,4 @@ RUN python3 -m pip uninstall opencv-python opencv-contrib-python opencv-contrib-
 RUN python3 -m pip install opencv-python==4.8.0.74
 
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8888", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "9888", "--reload"]

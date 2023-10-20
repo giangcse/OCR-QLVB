@@ -17,6 +17,11 @@ reader = easyocr.Reader(lang_list=['vi'], gpu=False)
 # PaddleOCR
 
 def find_tables_from_image(img_path: str, ocr_method: int):
+    '''
+    - img_path [str]: Duong dan den anh
+    - ocr_method [int]: 0 - VietOCR (Recommended)
+                      1 - EasyOCR
+    '''
     # Read image
     image = Image(src=img_path)
     table_img = cv2.imread(img_path)
@@ -36,7 +41,9 @@ def find_tables_from_image(img_path: str, ocr_method: int):
                         img_predict = PILImage.fromarray(img_cropped)
                         text_extracted = detector.predict(img_predict)
                     elif ocr_method==1:
-                        text_extracted = reader.readtext(img_cropped)
+                        extracted = reader.readtext(img_cropped)
+                        if len(extracted) != 0:
+                            text_extracted = extracted[0][1]
                     text_in_row.append(text_extracted)
                 text_in_table.append(text_in_row)
             tables_in_image.append(text_in_table)
@@ -44,5 +51,5 @@ def find_tables_from_image(img_path: str, ocr_method: int):
     except Exception:
         return "Table not found"
     
-result = find_tables_from_image(img_path='C:\\Users\\lusap\\Projects\\OCR-QLVB\\uploaded\\test\\back.jpg', ocr_method=1)
-print(result)
+# result = find_tables_from_image(img_path='D:\\Dev\\OCR-QLVB\\uploaded\\test\\back.jpg', ocr_method=1)
+# print(result)

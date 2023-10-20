@@ -171,10 +171,24 @@ async def ocr_bangdiem(file: UploadFile = File(...), ocr_method: int = Form(...)
                 # os.remove(file_path)
                 return JSONResponse(status_code=200, content=ocr_result)
         except Exception as e:
-            return JSONResponse(status_code=400, content={'status': e})
+            return JSONResponse(status_code=400, content={'status': 'Bad request'})
     else:
         return JSONResponse(status_code=401, content={'status': 'Login first'})
     
+@app.post('/ocr_with_bbox')
+async def ocr_with_bbox(file_path: str = Form(...), ocr_method: int = Form(...), x: int = Form(...), y: int = Form(...), w: int = Form(...), h: int = Form(...), token: str = Cookie(None)):
+    if token:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username = payload.get("sub")
+            if username:
+                result = ocr_with_bbox(file_path=file_path, ocr_method=ocr_method, x=x, y=y, w=w, h=h)
+                return JSONResponse(status_code=200, content=result)
+        except Exception as e:
+            return JSONResponse(status_code=400, content={'status': 'Bad request'})
+    else:
+        return JSONResponse(status_code=401, content={'status': 'Login first'})
+
 @app.post('/ocr_bangtn')
 async def ocr_vanban(file: UploadFile = File(...), token: str = Cookie(None)):
     if token:

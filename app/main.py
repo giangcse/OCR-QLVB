@@ -162,13 +162,13 @@ async def ocr_bangdiem(file: UploadFile = File(...), ocr_method: int = Form(...)
                         ocr_page = find_tables_from_image(page, ocr_method)
                         ocr_result.append(ocr_page)
                     # Xóa thư mục ảnh
-                    shutil.rmtree(os.path.dirname(page), ignore_errors=True)
+                    # shutil.rmtree(os.path.dirname(page), ignore_errors=True)
                 # Ngược lại nếu là ảnh thì đưa thẳng vào OCR
                 else:
                     ocr_result = find_tables_from_image(file_path, ocr_method)
                 create_log = conn.execute('''INSERT INTO logs VALUES (?, ?, ?, ?)''', ('OCR Bảng điểm', str(ocr_result), username, round(datetime.datetime.now().timestamp()),))
                 conn.commit()
-                os.remove(file_path)
+                # os.remove(file_path)
                 return JSONResponse(status_code=200, content=ocr_result)
         except Exception as e:
             return JSONResponse(status_code=400, content={'status': e})

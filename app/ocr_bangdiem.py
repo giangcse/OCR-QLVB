@@ -16,7 +16,7 @@ detector = Predictor(config)
 reader = easyocr.Reader(lang_list=['vi'], gpu=False)
 # PaddleOCR
 
-def find_tables_from_image(img_path: str, ocr_method: int):
+def find_tables_from_image(img_path: str, ocr_method: int)->dict:
     '''
     - img_path [str]: Duong dan den anh
     - ocr_method [int]: 0 - VietOCR (Recommended)
@@ -44,12 +44,12 @@ def find_tables_from_image(img_path: str, ocr_method: int):
                         extracted = reader.readtext(img_cropped)
                         if len(extracted) != 0:
                             text_extracted = extracted[0][1]
-                    text_in_row.append(text_extracted)
-                text_in_table.append(text_in_row)
-            tables_in_image.append(text_in_table)
-        return tables_in_image
+                    text_in_row.append(text_extracted) # Văn bản OCR trên 1 dòng
+                text_in_table.append(text_in_row) # Văn bản OCR các dòng trong bảng
+            tables_in_image.append(text_in_table) # Các bảng trong trang
+        return {'image': os.path.basename(img_path), 'data': tables_in_image}
     except Exception:
-        return "Table not found"
+        return {'image': os.path.basename(img_path), 'data': 'table not found'}
     
-# result = find_tables_from_image(img_path='D:\\Dev\\OCR-QLVB\\uploaded\\test\\back.jpg', ocr_method=1)
+# result = find_tables_from_image(img_path='/home/giang/OCR-QLVB/img_test/back.jpg', ocr_method=0)
 # print(result)

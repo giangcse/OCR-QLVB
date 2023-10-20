@@ -1,3 +1,6 @@
-from ocr_bangtn import extract_text
+import os
+import shutil
 
-print(extract_text('C:\\Users\\lusap\\Projects\\OCR-QLVB\\images\\quyphong.jpg'))
+path = ''
+
+print(os.path.pardir(path))

@@ -141,7 +141,7 @@ async def change_password(request: Request):
             return JSONResponse(status_code=409, content="Username is existed!")
 
 @app.post('/ocr_bangdiem')
-async def ocr_bangdiem(file: UploadFile = File(...), token: str = Cookie(None)):
+async def ocr_bangdiem(file: UploadFile = File(...), ocr_method: int = Form(...), token: str = Cookie(None)):
     if token:
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -153,7 +153,7 @@ async def ocr_bangdiem(file: UploadFile = File(...), token: str = Cookie(None)):
                 file_path = os.path.join(uploaded_folder, file.filename)
                 with open(file_path, "wb") as f:
                     shutil.copyfileobj(file.file, f)
-                ocr_result = find_tables_from_image(file_path)
+                ocr_result = find_tables_from_image(file_path, ocr_method)
                 os.remove(file_path)
                 create_log = conn.execute('''INSERT INTO logs VALUES (?, ?, ?, ?)''', ('OCR Bảng điểm', str(ocr_result), username, round(datetime.datetime.now().timestamp()),))
                 conn.commit()

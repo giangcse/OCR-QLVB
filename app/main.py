@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from hashlib import sha3_256
 from pydantic import BaseModel
 from .ocr_bangtn import extract_text
-from .ocr_bangdiem import find_tables_from_image
+from .ocr_bangdiem import find_tables_from_image, ocr_rectangle_from_image
 from .utils import *
 
 import os
@@ -182,7 +182,7 @@ async def ocr_with_bbox(file_path: str = Form(...), ocr_method: int = Form(...),
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             username = payload.get("sub")
             if username:
-                result = ocr_with_bbox(file_path=file_path, ocr_method=ocr_method, x=x, y=y, w=w, h=h)
+                result = ocr_rectangle_from_image(file_path=file_path, ocr_method=ocr_method, x=x, y=y, w=w, h=h)
                 return JSONResponse(status_code=200, content=result)
         except Exception as e:
             return JSONResponse(status_code=400, content={'status': 'Bad request'})

@@ -1,4 +1,5 @@
 from img2table.document import Image
+from img2table.ocr import EasyOCR
 from PIL import Image as PILImage
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
@@ -15,10 +16,10 @@ detector = Predictor(config)
 def find_tables_from_image(img_path: str):
     # Read image
     image = Image(src=img_path)
+    table_img = cv2.imread(img_path)
     try:
         # Extract tables from image
         tables = image.extract_tables()
-        table_img = cv2.imread(img_path)
         # Loop in all table
         tables_in_image = []
         for table in tables:

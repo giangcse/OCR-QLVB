@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, HTTPException, Cookie, UploadFile, File
+from fastapi import FastAPI, Request, Depends, HTTPException, Cookie, UploadFile, File, Form
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +6,7 @@ from hashlib import sha3_256
 from pydantic import BaseModel
 from .ocr_bangtn import extract_text
 from .ocr_bangdiem import find_tables_from_image
+from .utils import *
 
 import os
 import shutil
